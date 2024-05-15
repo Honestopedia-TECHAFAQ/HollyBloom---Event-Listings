@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>HollyBloom - Event Listings</title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <style>
+    .card-title {
+      font-size: 1.25rem;
+    }
+    .filter {
+      margin-bottom: 20px;
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <a class="navbar-brand" href="#">HollyBloom</a>
+  </nav>
+  <div class="container mt-4 filter">
+    <h4>Filter Events</h4>
+    <div class="row">
+      <div class="col-md-4">
+        <label for="locationFilter">Location:</label>
+        <select id="locationFilter" class="form-control">
+          <option value="">All</option>
+          <option value="London">London</option>
+          <option value="Manchester">Manchester</option>
+          <option value="Birmingham">Birmingham</option>
+        </select>
+      </div>
+      <div class="col-md-4">
+        <label for="priceFilter">Max Price ($):</label>
+        <input type="number" id="priceFilter" class="form-control" min="0">
+      </div>
+      <div class="col-md-4">
+        <button class="btn btn-primary mt-4" onclick="applyFilters()">Apply Filters</button>
+      </div>
+    </div>
+  </div>
+  <div class="container" id="eventList">
+  </div>
+  <div class="modal fade" id="eventDetailsModal" tabindex="-1" role="dialog" aria-labelledby="eventDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="eventDetailsModalLabel">Event Details</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" id="eventDetailsBody">
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const events = [
+      { id: 1, title: "Event 1", location: "London", dateTime: "2024-05-20 10:00", price: "$20", bookingLink: "#" },
+      { id: 2, title: "Event 2", location: "Manchester", dateTime: "2024-05-22 15:00", price: "$15", bookingLink: "#" },
+      { id: 3, title: "Event 3", location: "Birmingham", dateTime: "2024-05-25 09:00", price: "$25", bookingLink: "#" }
+    ];
+    function displayEvents(eventsData) {
+      const eventList = document.getElementById('eventList');
+      eventList.innerHTML = '';
+      eventsData.forEach(event => {
+        const card = `
+          <div class="col-md-4 mb-3">
+            <div class="card">
+              <div class="card-body">
+                <h5 class="card-title">${event.title}</h5>
+                <p class="card-text">Location: ${event.location}</p>
+                <p class="card-text">Date & Time: ${event.dateTime}</p>
+                <p class="card-text">Price: ${event.price}</p>
+                <button class="btn btn-primary" onclick="showEventDetails(${event.id})">View Details</button>
+              </div>
+            </div>
+          </div>
+        `;
+        eventList.innerHTML += card;
+      });
+    }
+    function applyFilters() {
+      const locationFilter = document.getElementById('locationFilter').value;
+      const priceFilter = document.getElementById('priceFilter').value;
+      let filteredEvents = events;
+
+      if (locationFilter) {
+        filteredEvents = filteredEvents.filter(event => event.location.toLowerCase() === locationFilter.toLowerCase());
+      }
+
+      if (priceFilter) {
+        filteredEvents = filteredEvents.filter(event => parseInt(event.price.substring(1)) <= parseInt(priceFilter));
+      }
+
+      displayEvents(filteredEvents);
+    }
+    function showEventDetails(eventId) {
+      const event = events.find(event => event.id === eventId);
+      const modalBody = document.getElementById('eventDetailsBody');
+      modalBody.innerHTML = `
+        <p><strong>Title:</strong> ${event.title}</p>
+        <p><strong>Location:</strong> ${event.location}</p>
+        <p><strong>Date & Time:</strong> ${event.dateTime}</p>
+        <p><strong>Price:</strong> ${event.price}</p>
+        <a href="${event.bookingLink}" class="btn btn-primary">Book Now</a>
+      `;
+      $('#eventDetailsModal').modal('show');
+    }
+    displayEvents(events);
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+  <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
